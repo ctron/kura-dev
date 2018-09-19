@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+source "${SCRIPT_DIR}/remote.config"
+
+ssh "$REMOTE_TARGET" "sudo dpkg --purge kura && sudo rm -Rf /opt/eclipse && rm *.deb"
+scp kura-build-all/kura/distrib/target/kura_*_raspberry-pi-2-3_installer.deb "$REMOTE_TARGET":
+ssh "$REMOTE_TARGET" "sudo dpkg -i kura_*_raspberry-pi-2-3_installer.deb"
+

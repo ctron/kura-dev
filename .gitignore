@@ -1,0 +1,9 @@
+
+# Project
+
+/kura-build-all/
+/kura-logs-*
+
+# Eclipse IDE
+
+/.project

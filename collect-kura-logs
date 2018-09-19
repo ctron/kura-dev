@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+source "${SCRIPT_DIR}/remote.config"
+
+DIR="kura-logs-$(date +%Y%m%d-%H%m%S)"
+
+mkdir -p "$DIR"
+
+trap 'rm -Rf "$DIR"' EXIT
+
+scp "$REMOTE_TARGET":/var/log/kura.log "$DIR/"
+scp "$REMOTE_TARGET":/var/log/kura-console.log "$DIR/"
+scp "$REMOTE_TARGET":/var/log/audit/audit.log "$DIR/"
+scp "$REMOTE_TARGET":'/etc/dhcpd-*.conf' "$DIR/"
+
+ssh "$REMOTE_TARGET" "set -x; iwconfig ; iw wlan0 link ; ip addr ; ip route ; cat /etc/resolv.conf ; ping -c4 -4 google.com ; iptables -n -L" &> "$DIR/network.log"
+ssh "$REMOTE_TARGET" "ps ax" &> "$DIR/procs.log"
+
+tar czf "$DIR".tar.gz "$DIR"
+
+echo "collected logs at: ${DIR}.tar.gz"

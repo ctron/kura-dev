@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+ : ${REPO:=ctron/kura}
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+source "${SCRIPT_DIR}/common"
+
+test -n "$1" || die "Missing argument: branch"
+BRANCH="$1"
+shift
+
+M2_LOCAL_REPO="$(dirname "$0")/m2.repo"
+
+rm -Rf kura-build-all
+git clone https://github.com/$REPO -b "$BRANCH" kura-build-all
+pushd kura-build-all
+./build-all.sh -Pspeedup "-Dmaven.repo.local=$M2_LOCAL_REPO" "$@"
+popd

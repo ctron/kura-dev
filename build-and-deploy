@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+export KURA_BUILD_CACHE=/tmp/kura.build
+
+./build-kura "$@"
+./deploy-kura
